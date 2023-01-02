@@ -14,7 +14,8 @@ namespace FR_UI.Models
     }
     public class PageResult
     {
-        public int FormatType { get; set; }
+        //public int FormatType { get; set; }
+        public int statusCode { get; set; }
         public List<int> HotelDocumentPageNumber { get; set; }
         public List<int> BankBookPageNumber { get; set; }
         public List<int> BirthCertificatePageNumber { get; set; }

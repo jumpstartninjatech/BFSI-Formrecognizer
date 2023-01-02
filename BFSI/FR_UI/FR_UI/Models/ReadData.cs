@@ -108,59 +108,121 @@ namespace FR_UI.Models
             }
         }
 
-        public static List<PageResult> ValidateAnalyzeResult(List<AnalyzeLayoutResult> analyzeLayoutResults)
+        public static PageResult ValidateAnalyzeResult(List<AnalyzeLayoutResult> analyzeLayoutResults)
         {
-
-            List<PageResult> pageResults = new List<PageResult>();
-            var filter = new string[] { "hotel", "guest", "room" };
-            //var matches = FindMatchs(analyzeLayoutResults, filter);
-
-
-            var findHotelDocumentPageNumber = analyzeLayoutResults.Where(x => filter.Any(y => x.LinesText.Contains(y))).Select(x => x.PageNumber).ToList();
-            var findBankBookPageNumber = analyzeLayoutResults.Where(s => s.LinesText.Contains("bank") || s.LinesText.Contains("customer")|| s.LinesText.Contains("joint holder")).Select(s => s.PageNumber).ToList();
-            var findBirthCertificatePageNumber = analyzeLayoutResults.Where(s => s.LinesText.Contains("birth certificate") || s.LinesText.Contains("certification of birth")).Select(s => s.PageNumber).ToList();
-            var findAirTicketPageNumber = analyzeLayoutResults.Where(s => s.LinesText.Contains("economy") || s.LinesText.Contains("airport") || s.LinesText.Contains("passenger")).Select(s => s.PageNumber).ToList();
-            var findNationalIdPageNumber = analyzeLayoutResults.Where(s => s.LinesText.Contains("passport")|| s.LinesText.Contains("republic of india")).Select(s => s.PageNumber).ToList();
-
-            pageResults.Add(new PageResult
+            
+            try
             {
-                FormatType = 0,
-                HotelDocumentPageNumber = findHotelDocumentPageNumber,
-                BankBookPageNumber = findBankBookPageNumber,
-                BirthCertificatePageNumber = findBirthCertificatePageNumber,
-                AirTicketPageNumber = findAirTicketPageNumber,
-                NationalIdPageNumber = findNationalIdPageNumber
-            });
+                //List<PageResult> pageResults = new List<PageResult>();
+                PageResult PR = new PageResult();
+                var hotelFilter = new string[] { "hotel", "guest", "room" };
+                var bankBookFilter = new string[] { "customer", "joint holder", "passbook", "transaction statement" };
+                var BirthCertificateFilter = new string[] { "birth certificate", "certification of birth", "child's name" };
+                var AirTicketFilter = new string[] { "airport", "passenger", "flight" };
+                var NationalIdFilter = new string[] { "republic of india", "country code", "passport no" };
+                List<int> findHotelDocumentPageNumber = new List<int>();
+                List<int> findBankBookPageNumber = new List<int>();
+                List<int> findBirthCertificatePageNumber = new List<int>();
+                List<int> findAirTicketPageNumber = new List<int>();
+                List<int> findNationalIdPageNumber = new List<int>();
 
-            pageResults.Add(new PageResult
+                foreach (var arrayele in analyzeLayoutResults)
+                {
+                    Console.WriteLine(arrayele.PageNumber);
+                    Console.WriteLine(arrayele.LinesText);
+                    string[] dataarray = arrayele.LinesText.ToArray();
+                    var hotelMatches = FindMatchs(dataarray, hotelFilter);
+                    if (hotelMatches.Length > 0)
+                    {
+                        findHotelDocumentPageNumber.Add(arrayele.PageNumber);
+                    }
+                    var bankBookMatches = FindMatchs(dataarray, bankBookFilter);
+                    if (bankBookMatches.Length > 0)
+                    {
+                        findBankBookPageNumber.Add(arrayele.PageNumber);
+                    }
+                    var BirthCertificateMatches = FindMatchs(dataarray, BirthCertificateFilter);
+                    if (BirthCertificateMatches.Length > 0)
+                    {
+                        findBirthCertificatePageNumber.Add(arrayele.PageNumber);
+                    }
+                    var AirTicketMatches = FindMatchs(dataarray, AirTicketFilter);
+                    if (AirTicketMatches.Length > 0)
+                    {
+                        findAirTicketPageNumber.Add(arrayele.PageNumber);
+                    }
+                    var NationalIdMatches = FindMatchs(dataarray, NationalIdFilter);
+                    if (NationalIdMatches.Length > 0)
+                    {
+                        findNationalIdPageNumber.Add(arrayele.PageNumber);
+                    }
+
+                }
+
+                //var findHotelDocumentPageNumber = analyzeLayoutResults.Where(s => s.LinesText.Contains("hotel") || s.LinesText.Contains("guest") || s.LinesText.Contains("room")).Select(s => s.PageNumber).ToList();
+                //var findBankBookPageNumber = analyzeLayoutResults.Where(s => s.LinesText.Contains("bank") || s.LinesText.Contains("customer")|| s.LinesText.Contains("joint holder")).Select(s => s.PageNumber).ToList();
+                //var findBirthCertificatePageNumber = analyzeLayoutResults.Where(s => s.LinesText.Contains("birth certificate") || s.LinesText.Contains("certification of birth")).Select(s => s.PageNumber).ToList();
+                //var findAirTicketPageNumber = analyzeLayoutResults.Where(s => s.LinesText.Contains("economy") || s.LinesText.Contains("airport") || s.LinesText.Contains("passenger")).Select(s => s.PageNumber).ToList();
+                //var findNationalIdPageNumber = analyzeLayoutResults.Where(s => s.LinesText.Contains("passport")|| s.LinesText.Contains("republic of india")).Select(s => s.PageNumber).ToList();
+
+                //pageResults.Add(new PageResult
+                //{
+                //    FormatType = 0,
+                //    statusCode = 200,
+                //    HotelDocumentPageNumber = findHotelDocumentPageNumber,
+                //    BankBookPageNumber = findBankBookPageNumber,
+                //    BirthCertificatePageNumber = findBirthCertificatePageNumber,
+                //    AirTicketPageNumber = findAirTicketPageNumber,
+                //    NationalIdPageNumber = findNationalIdPageNumber
+                //});
+
+                //pageResults.Add(new PageResult
+                //{
+                //    FormatType = 1,
+                //    HotelDocumentPageNumber = findHotelDocumentPageNumber
+                //}); 
+                //pageResults.Add(new PageResult
+                //{
+                //    FormatType = 2,
+                //    BankBookPageNumber = findBankBookPageNumber
+                //});
+                //pageResults.Add(new PageResult
+                //{
+                //    FormatType = 3,
+                //    BirthCertificatePageNumber = findBirthCertificatePageNumber
+                //});
+                //pageResults.Add(new PageResult
+                //{
+                //    FormatType = 4,
+                //    AirTicketPageNumber = findAirTicketPageNumber
+                //}); 
+                //pageResults.Add(new PageResult
+                //{
+                //    FormatType = 5,
+                //    NationalIdPageNumber = findNationalIdPageNumber
+                //});
+                PR.statusCode = 200;
+                PR.HotelDocumentPageNumber = findHotelDocumentPageNumber;
+                PR.BankBookPageNumber = findBankBookPageNumber;
+                PR.BirthCertificatePageNumber = findBirthCertificatePageNumber;
+                PR.AirTicketPageNumber = findAirTicketPageNumber;
+                PR.NationalIdPageNumber = findNationalIdPageNumber;
+                return PR;
+            }
+            catch (Exception ex)
             {
-                FormatType = 1,
-                HotelDocumentPageNumber = findHotelDocumentPageNumber
-            }); 
-            pageResults.Add(new PageResult
-            {
-                FormatType = 2,
-                BankBookPageNumber = findBankBookPageNumber
-            });
-            pageResults.Add(new PageResult
-            {
-                FormatType = 3,
-                BirthCertificatePageNumber = findBirthCertificatePageNumber
-            });
-            pageResults.Add(new PageResult
-            {
-                FormatType = 4,
-                AirTicketPageNumber = findAirTicketPageNumber
-            }); 
-            pageResults.Add(new PageResult
-            {
-                FormatType = 5,
-                NationalIdPageNumber = findNationalIdPageNumber
-            });
+                PageResult PR = new PageResult();
+                PR.statusCode = 300;
+                return PR;
+
+            }
 
 
-            return pageResults;
+        }
 
+        public static string[] FindMatchs(string[] array, string[] filter)
+        {
+            return array.Where(x => filter.Any(y => x.Contains(y))).ToArray();
         }
 
         //public static string[] FindMatchs(List<AnalyzeLayoutResult> array, string[] filter)

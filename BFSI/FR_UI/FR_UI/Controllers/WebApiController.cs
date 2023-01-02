@@ -46,9 +46,14 @@ namespace FR_UI.Controllers
                                 if (filesize)
                                 {
                                     // OCR Code Goes here
-                                     ReadData.ExtractText(imagestring);
+                                    ReadData.ExtractText(imagestring);
                                     var result = ReadData.ValidateAnalyzeResult(ReadData.ALR);
-                                    return Json(new { StatusCode = "200", Result = result});
+                                    if (result.statusCode == 200)
+                                    {
+                                        return Json(new { StatusCode = "200", Result = result });
+                                    }
+
+                                    return Json(new { StatusCode = "300", Result = "Invalid Data"});
                                 }
                                 else
                                 {

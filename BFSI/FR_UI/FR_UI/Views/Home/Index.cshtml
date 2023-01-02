@@ -1,0 +1,173 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="twitter:title" content="Data Extraction">
+    <meta property="og:title" content="Data Extraction">
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="~/Assets/img/JSN Logo_Updated.png">
+    <!-- Meta -->
+    <meta name="description" content="JSN Innovative KYC Processing Using Azure Cognitive Service">
+    <meta name="author" content="JSN">
+    <title>FRDemo</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Bracket CSS -->
+    <link rel="stylesheet" href="~/Assets/css/bracket.css">
+    <link rel="stylesheet" href="~/Assets/css/custom/extraction.css" />
+    <style>
+        .show_more_div {
+            display: none;
+        }
+
+        .table-bordered {
+            border: 1px solid #dee2e6 !important;
+        }
+
+        .highlight {
+            background-color: yellow;
+        }
+
+        mark {
+            background: orange;
+            color: unset;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            box-shadow: none;
+        }
+
+        button#search_btn {
+            box-shadow: none;
+        }
+
+        .label_align_class {
+            display: flex;
+            align-items: center;
+        }
+
+        .custom_img_border {
+            border: 1px solid #868ba1;
+        }
+    </style>
+    <body>
+
+        <!-- ########## START: LEFT PANEL ########## -->
+        @RenderPage("~/Views/Shared/_Side_bar.cshtml")
+        <!-- ########## END: LEFT PANEL ########## -->
+        <!-- ########## START: HEAD PANEL ########## -->
+        @RenderPage("~/Views/Shared/_Header.cshtml")
+        <!-- ########## END: HEAD PANEL ########## -->
+        <!-- main - display area  -->
+
+        <div class="br-mainpanel">
+            <div class="br-pageheader pd-y-0 pd-l-20">
+            </div><!-- br-pageheader -->
+            <div class="br-pagebody">
+                <div class="br-section-wrapper p-0">
+                    <div class="pd-x-20 pd-sm-x-30 pd-t-20 pd-sm-t-30">
+                        <h5 class="tx-gray-800 mg-b-5">Data Verification</h5>
+                    </div>
+                    <div class="container">
+
+                        <div class="row">
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6 ">
+                                <div class="form-group row">
+                                    <div class="col-4 label_align_class">
+                                        <label for="com_vis_file_id" class="" style="margin-top:20px; margin-left:40px;"><b>Upload Document</b></label>
+                                    </div>
+
+                                    <div class="col-8 align-middle">
+                                        <input type="file" class="form-control-file  btn btn-primary" id="document_file" onchange="single_convertToBase64(this)" style="margin-top: 20px; height:46px">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6 ">
+                                <div class="square ">
+                                    <label>
+                                        <input type="checkbox" class="radio checkbox_value" value="1" name="format_type" id="pan_check" /><span id="pan" style="margin-left:4px">Pan</span>
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" class="radio checkbox_value" value="2" name="format_type" id="aadhar_check" /><span id="" style="margin-left:4px">Aadhar</span>
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" class="radio checkbox_value" value="3" name="format_type" id="Bk_check" /><span id="" style="margin-left:4px">Bank Statement</span>
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" class="radio checkbox_value" value="4" name="format_type" id="visting_check" /><span id="" style="margin-left:4px">Visting card</span>
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" class="radio checkbox_value" value="0" name="format_type" id="select-all" style="margin-left:18px;"/><span id="" style="margin-left:4px">All the above</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <br />
+
+                        <div class="row">
+                            <center>
+                                <p class="msg text-center text-danger" id="process_err_msg"></p>
+                                <button href="#" class="btn btn-primary btn-md" type="button" data-loading-text="<i class='fa fa-spinner fa-spin'></i>&nbsp;Loading..." id="submit_btn_id">
+                                    <span id="process">Process</span>
+                                </button>
+                            </center>
+                        </div>
+                        <br />
+                        <br />
+                        <div class="row">
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6 ">
+                                <div class="col-12 text-center" id="div_preview_content_file">
+                                    <img src="~/assets/img/img12.jpg" alt="" class="mt-3 custom_img_border" id="preview_img2" style="width: 100%">
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6 ">
+                                <div class="" id="initial_hide">
+                                    <div class="row">
+                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 pb-3">
+                                            <div class="card bd-0" style="margin-top:16px;">
+                                                <div class="card-header bg-primary text-light">
+                                                    Extracted Details
+                                                </div><!-- card-header -->
+                                                <div class="card-body bd bd-t-0 rounded-bottom" id="extracted_data">
+                                                </div><!-- card-body -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <br />
+                    </div>
+                </div><!-- br-section-wrapper -->
+            </div><!-- br-pagebody -->
+
+        </div>
+        <!-- main - display area  -->
+        <div id="base64_content" style="display:none"></div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="~/Assets/lib/jquery/jquery.js"></script>
+        <script src="~/Assets/lib/popper.js/popper.js"></script>
+        <script src="~/Assets/lib/bootstrap/bootstrap.js"></script>
+        <script src="~/Assets/lib/perfect-scrollbar/js/perfect-scrollbar.jquery.js"></script>
+        <script src="~/Assets/lib/moment/moment.js"></script>
+        <script src="~/Assets/lib/jquery-ui/jquery-ui.js"></script>
+        <script src="~/Assets/lib/jquery-switchbutton/jquery.switchButton.js"></script>
+        <script src="~/Assets/lib/peity/jquery.peity.js"></script>
+        <script src="~/Assets/lib/highlightjs/highlight.pack.js"></script>
+        <script src="~/Assets/js/bracket.js"></script>
+        <script src="~/Assets/js/customs/checkbox.js"></script>
+        <!-- container-scroller -->
+        <!-- custom java script -->
+        <script src="~/Assets/js/custom/company_kyc/gst_kyc.js"></script>
+
+
+    </body>
+</head>
+</html>

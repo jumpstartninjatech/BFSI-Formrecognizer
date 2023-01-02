@@ -1,0 +1,23 @@
+﻿<div class="br-logo">
+    <a class="navbar-brand brand-logo" href="~/Home/Index/"><img src="~/Assets/img/Ai-Magix.png" style="height:53px" alt="logo" /></a>
+</div>
+<div class="br-sideleft overflow-y-auto">
+    <label class="sidebar-label pd-x-15 mg-t-20"></label>
+    <div class="br-sideleft-menu">
+        <a href="~/Home/Index/" class="br-menu-link @( Request.Url.AbsolutePath.Split('/')[1].Length==0 ? "active"  : Request.Url.AbsolutePath.Split('/')[2] == "Index" ? "active" : "" )">
+            <div class="br-menu-item" style="padding: 0 9.5px !important;">
+                <i class="menu-item-icon icon far fa-address-card tx-24"></i>
+                <span class="menu-item-label" style="margin-left:16px;">Document Verification</span>
+            </div><!-- menu-item -->
+        </a>
+        <!--<a href="~/Home/CognitiveSearch/" class="br-menu-link @( Request.Url.AbsolutePath.Split('/')[1].Length==0 ? ""  : Request.Url.AbsolutePath.Split('/')[2] == "CognitiveSearch" ? "active" : "" )">
+            <div class="br-menu-item" style="padding: 0 9.5px !important;">
+                <i class="menu-item-icon icon far fa fa-search tx-24"></i>
+                <span class="menu-item-label" style="margin-left:16px;">Cognitive Search</span>
+            </div>--><!-- menu-item -->
+        <!--</a>--><!-- br-menu-link -->
+    </div><!-- br-sideleft-menu -->
+
+
+    <br>
+</div><!-- br-sideleft -->

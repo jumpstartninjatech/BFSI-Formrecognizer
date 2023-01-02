@@ -1,0 +1,31 @@
+﻿/*#document_file
+{
+    margin-left:-55px;
+}*/
+.square {
+    height: 67px!important;
+    width: 436px!important;
+    background-color: #f8f9fa;
+    border-color: #ff9933;
+    color: black;
+    margin-top: 20px;
+}
+
+#pan_check{
+    margin-top:17px;
+    margin-left:18px;
+}
+
+/*.hidden {
+    visibility: hidden;
+}*/
+
+#submit_btn_id{
+    margin-left:472px;
+    margin-top:-12px;
+
+}
+
+#document_file {
+    margin-left: 1px;
+}

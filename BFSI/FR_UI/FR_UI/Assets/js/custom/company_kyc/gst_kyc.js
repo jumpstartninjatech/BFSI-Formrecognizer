@@ -96,8 +96,6 @@ $("#submit_btn_id").click(function () {
         $("#process_err_msg").html("Please select atleast one checkbox for document identification");
         return false;
     }
-    return false;
-   
 
     if ($("#document_file").val() == "") {
         $("#process_err_msg").html("Please select a file");

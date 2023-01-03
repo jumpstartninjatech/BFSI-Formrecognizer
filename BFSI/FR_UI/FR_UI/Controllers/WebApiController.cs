@@ -1,6 +1,10 @@
 ﻿using FR_UI.Models;
+using Microsoft.Azure.Storage;
+using Microsoft.Azure.Storage.Auth;
+using Microsoft.Azure.Storage.Blob;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -9,12 +13,17 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 
 namespace FR_UI.Controllers
 {
     public class WebApiController : ApiController
     {
+        public static string accountname = ConfigurationManager.AppSettings["AzureBlobStorageAccName"];
+        public static string accesskey = ConfigurationManager.AppSettings["AzureBlobStorageAccKey"];
+        public static string containername = "tiffdatamerge";
+
         [HttpPost]
         [Route("GetTiffExtraction")]
         public async Task<object> GetTiffExtraction()
@@ -48,13 +57,47 @@ namespace FR_UI.Controllers
                             {
                                 if (filesize)
                                 {
-                                   
+                                    // OCR Code Goes here
+                                    // Tiff image split
+                                    int activePage;
+                                    int pagesc;
+                                   // var dest = @"D:\tifftest";
+                                    string dest = HttpContext.Current.Server.MapPath("/TiffData");
+                                    byte[] imageBytes = Convert.FromBase64String(imagestring);
+                                    List<string> listimage = new List<string>();
+                                    Image image;
+                                    using (MemoryStream ms = new MemoryStream(imageBytes))
+                                    {
+                                        
+                                        image = Image.FromStream(ms);
+                                        pagesc = image.GetFrameCount(System.Drawing.Imaging.FrameDimension.Page);
+                                        for (int index = 0; index < pagesc; index++)
+                                        {
+                                            activePage = index + 1;
+                                            image.SelectActiveFrame(System.Drawing.Imaging.FrameDimension.Page, index);
+                                            image.Save(dest + @"\file_" + activePage.ToString() + ".tiff", ImageFormat.Tiff);
+                                            listimage.Add(dest+@"\file_" + activePage.ToString() + ".tiff");
+
+                                        }
+                                        String[] str = listimage.ToArray();
+
+                                        mergeTifffiles(dest, str);
+                                        image.Dispose();
+
+                                        // image.Save(@"D:\tifftest\newTiff.tiff", ImageFormat.Tiff);
+                                    }
+                                    // End of Tiff
 
                                     ReadData.ExtractText(imagestring);
                                     var result = ReadData.ValidateAnalyzeResult(ReadData.ALR);
 
                                     if (result.statusCode == 200)
                                     {
+                                        int hotelcount = result.HotelDocumentPageNumber.Count();
+                                        foreach (int pagenumber in result.HotelDocumentPageNumber)
+                                        {
+                                            int pageno = pagenumber;
+                                        }
                                         return Json(new { StatusCode = "200", Result = result });
                                     }
 
@@ -92,9 +135,10 @@ namespace FR_UI.Controllers
             }
         }
 
-        public void mergeTifffiles(string[] sa)
+        public void mergeTifffiles(string dest ,string[] sa)
         {
-            var dest = @"D:\tifftest";
+
+            
             ImageCodecInfo info = null;
             foreach (ImageCodecInfo ice in ImageCodecInfo.GetImageEncoders())
                 if (ice.MimeType == "image/tiff")
@@ -126,10 +170,16 @@ namespace FR_UI.Controllers
                         //flush and close.
                         ep.Param[0] = new EncoderParameter(enc, (long)EncoderValue.Flush);
                         pages.SaveAdd(ep);
+                      
                     }
+                   
+
                     frame++;
                 }
             }
+            byte[] bypearrayimage = ImageToByte(pages);
+            string imagestringtiff = Convert.ToBase64String(bypearrayimage);
+            string returnurldata = StoreImageInModelVaidDataCollection(bypearrayimage, "tiff");
         }
         
 
@@ -185,6 +235,22 @@ namespace FR_UI.Controllers
             }
 
 
+        }
+
+        public static byte[] ImageToByte(Image img)
+        {
+            ImageConverter converter = new ImageConverter();
+            return (byte[])converter.ConvertTo(img, typeof(byte[]));
+        }
+
+        public static string StoreImageInModelVaidDataCollection(byte[] image, string file_type)
+        {
+            CloudBlobContainer cont = new CloudStorageAccount(new StorageCredentials(accountname, accesskey), useHttps: true).CreateCloudBlobClient().GetContainerReference(containername);
+            cont.CreateIfNotExists();
+            cont.SetPermissions(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
+            CloudBlockBlob cblob = cont.GetBlockBlobReference(Guid.NewGuid() + "_" + DateTime.Now.ToString("ddMMyyyy_HHmmss_ffffff") + "."+ file_type);//name should be unique otherwise override at same name.  
+            cblob.UploadFromStream(new MemoryStream(image));
+            return cblob.Uri.AbsoluteUri;
         }
 
     }

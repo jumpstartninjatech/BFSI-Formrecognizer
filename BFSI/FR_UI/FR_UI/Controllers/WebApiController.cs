@@ -57,47 +57,34 @@ namespace FR_UI.Controllers
                             {
                                 if (filesize)
                                 {
-                                    // OCR Code Goes here
-                                    // Tiff image split
-                                    int activePage;
-                                    int pagesc;
-                                   // var dest = @"D:\tifftest";
-                                    string dest = HttpContext.Current.Server.MapPath("/TiffData");
                                     byte[] imageBytes = Convert.FromBase64String(imagestring);
-                                    List<string> listimage = new List<string>();
-                                    Image image;
-                                    using (MemoryStream ms = new MemoryStream(imageBytes))
-                                    {
-                                        
-                                        image = Image.FromStream(ms);
-                                        pagesc = image.GetFrameCount(System.Drawing.Imaging.FrameDimension.Page);
-                                        for (int index = 0; index < pagesc; index++)
-                                        {
-                                            activePage = index + 1;
-                                            image.SelectActiveFrame(System.Drawing.Imaging.FrameDimension.Page, index);
-                                            image.Save(dest + @"\file_" + activePage.ToString() + ".tiff", ImageFormat.Tiff);
-                                            listimage.Add(dest+@"\file_" + activePage.ToString() + ".tiff");
-
-                                        }
-                                        String[] str = listimage.ToArray();
-
-                                        mergeTifffiles(dest, str);
-                                        image.Dispose();
-
-                                        // image.Save(@"D:\tifftest\newTiff.tiff", ImageFormat.Tiff);
-                                    }
-                                    // End of Tiff
 
                                     ReadData.ExtractText(imagestring);
                                     var result = ReadData.ValidateAnalyzeResult(ReadData.ALR);
 
                                     if (result.statusCode == 200)
                                     {
-                                        int hotelcount = result.HotelDocumentPageNumber.Count();
-                                        foreach (int pagenumber in result.HotelDocumentPageNumber)
+                                        if (result.HotelDocumentPageNumber.Count() > 0)
                                         {
-                                            int pageno = pagenumber;
+                                            byte[] cbyte = MergeTiff(result.HotelDocumentPageNumber,"HotelBooking", imageBytes);
                                         }
+                                        if (result.BankBookPageNumber.Count() > 0)
+                                        {
+                                            byte[] cbyte = MergeTiff(result.BankBookPageNumber,"BankStatement", imageBytes);
+                                        }
+                                        if (result.BirthCertificatePageNumber.Count() > 0)
+                                        {
+                                            byte[] cbyte = MergeTiff(result.BirthCertificatePageNumber,"BirthCertificate", imageBytes);
+                                        }
+                                        if (result.AirTicketPageNumber.Count() > 0)
+                                        {
+                                            byte[] cbyte = MergeTiff(result.AirTicketPageNumber,"AirTicket", imageBytes);
+                                        }
+                                        if (result.NationalIdPageNumber.Count() > 0)
+                                        {
+                                            byte[] cbyte = MergeTiff(result.NationalIdPageNumber,"NationalID", imageBytes);
+                                        }
+
                                         return Json(new { StatusCode = "200", Result = result });
                                     }
 
@@ -135,120 +122,97 @@ namespace FR_UI.Controllers
             }
         }
 
-        public void mergeTifffiles(string dest ,string[] sa)
+        private byte[] MergeTiff(byte[] imageBytes, List<int> hotelDocumentPageNumber)
         {
-
-            
-            ImageCodecInfo info = null;
-            foreach (ImageCodecInfo ice in ImageCodecInfo.GetImageEncoders())
-                if (ice.MimeType == "image/tiff")
-                    info = ice;
-            Encoder enc = Encoder.SaveFlag;
-            EncoderParameters ep = new EncoderParameters(1);
-            ep.Param[0] = new EncoderParameter(enc, (long)EncoderValue.MultiFrame);
-            Bitmap pages = null;
-            int frame = 0;
-            foreach (string s in sa)
-            {
-                //  using (FileStream fileStream = System.IO.File.Open(s, FileMode.Open))
-                {
-                    if (frame == 0)
-                    {
-                        pages = (Bitmap)Image.FromFile(s);
-                        //save the first frame
-                        pages.Save(dest + @"\file_1123.tiff", info, ep);
-                    }
-                    else
-                    {
-                        //save the intermediate frames
-                        ep.Param[0] = new EncoderParameter(enc, (long)EncoderValue.FrameDimensionPage);
-                        Bitmap bm = (Bitmap)Image.FromFile(s);
-                        pages.SaveAdd(bm, ep);
-                    }
-                    if (frame == sa.Length - 1)
-                    {
-                        //flush and close.
-                        ep.Param[0] = new EncoderParameter(enc, (long)EncoderValue.Flush);
-                        pages.SaveAdd(ep);
-                      
-                    }
-                   
-
-                    frame++;
-                }
-            }
-            byte[] bypearrayimage = ImageToByte(pages);
-            string imagestringtiff = Convert.ToBase64String(bypearrayimage);
-            string returnurldata = StoreImageInModelVaidDataCollection(bypearrayimage, "tiff");
-        }
-        
-
-        public void mergeTiffPages(string str_DestinationPath, string[] sourceFiles)
-        {
-            System.Drawing.Imaging.ImageCodecInfo codec = null;
-
-            foreach (System.Drawing.Imaging.ImageCodecInfo cCodec in System.Drawing.Imaging.ImageCodecInfo.GetImageEncoders())
-            {
-                if (cCodec.CodecName == "Built-in TIFF Codec")
-                    codec = cCodec;
-            }
-
-            try
-            {
-
-                System.Drawing.Imaging.EncoderParameters imagePararms = new System.Drawing.Imaging.EncoderParameters(1);
-                imagePararms.Param[0] = new System.Drawing.Imaging.EncoderParameter(System.Drawing.Imaging.Encoder.SaveFlag, (long)System.Drawing.Imaging.EncoderValue.MultiFrame);
-
-                if (sourceFiles.Length == 1)
-                {
-                    System.IO.File.Copy((string)sourceFiles[0], str_DestinationPath, true);
-
-                }
-                else if (sourceFiles.Length >= 1)
-                {
-                    System.Drawing.Image DestinationImage = (System.Drawing.Image)(new System.Drawing.Bitmap((string)sourceFiles[0]));
-
-                    DestinationImage.Save(str_DestinationPath, codec, imagePararms);
-
-                    imagePararms.Param[0] = new System.Drawing.Imaging.EncoderParameter(System.Drawing.Imaging.Encoder.SaveFlag, (long)System.Drawing.Imaging.EncoderValue.FrameDimensionPage);
-
-
-                    for (int i = 0; i < sourceFiles.Length - 1; i++)
-                    {
-                        System.Drawing.Image img = (System.Drawing.Image)(new System.Drawing.Bitmap((string)sourceFiles[i]));
-
-                        DestinationImage.SaveAdd(img, imagePararms);
-                        img.Dispose();
-                    }
-
-                    imagePararms.Param[0] = new System.Drawing.Imaging.EncoderParameter(System.Drawing.Imaging.Encoder.SaveFlag, (long)System.Drawing.Imaging.EncoderValue.Flush);
-                    DestinationImage.SaveAdd(imagePararms);
-                    imagePararms.Dispose();
-                    DestinationImage.Dispose();
-
-                }
-
-            }
-            catch (Exception ex)
-            {
-                //Response.Write(ex.Message);
-            }
-
-
+            throw new NotImplementedException();
         }
 
-        public static byte[] ImageToByte(Image img)
+        public static byte[] MergeTiff( List<int> listdata,string DocumentName,params byte[][] tiffFiles)
         {
-            ImageConverter converter = new ImageConverter();
-            return (byte[])converter.ConvertTo(img, typeof(byte[]));
+           
+            byte[] tiffMerge = null;
+            using (var msMerge = new MemoryStream())
+            {
+                //get the codec for tiff files
+                ImageCodecInfo ici = null;
+                foreach (ImageCodecInfo i in ImageCodecInfo.GetImageEncoders())
+                    if (i.MimeType == "image/tiff")
+                        ici = i;
+
+                Encoder enc = Encoder.SaveFlag;
+                EncoderParameters ep = new EncoderParameters(1);
+
+                Bitmap pages = null;
+                int frame = 0;
+
+                foreach (var tiffFile in tiffFiles)
+                {
+                    using (var imageStream = new MemoryStream(tiffFile))
+                    {
+                        using (Image tiffImage = Image.FromStream(imageStream))
+                        {
+                            foreach (Guid guid in tiffImage.FrameDimensionsList)
+                            {
+                                //create the frame dimension 
+                                FrameDimension dimension = new FrameDimension(guid);
+                                //Gets the total number of frames in the .tiff file 
+                                int noOfPages = tiffImage.GetFrameCount(dimension);
+
+                                for (int index = 0; index < noOfPages; index++)
+                                {
+                                    foreach (int pagenumber in listdata)
+                                    {
+                                        if (pagenumber - 1 == index)
+                                        {
+                                            FrameDimension currentFrame = new FrameDimension(guid);
+                                            tiffImage.SelectActiveFrame(currentFrame, index);
+                                            using (MemoryStream tempImg = new MemoryStream())
+                                            {
+                                                tiffImage.Save(tempImg, ImageFormat.Tiff);
+                                                {
+                                                    if (frame == 0)
+                                                    {
+                                                        //save the first frame
+                                                        pages = (Bitmap)Image.FromStream(tempImg);
+                                                        ep.Param[0] = new EncoderParameter(enc, (long)EncoderValue.MultiFrame);
+                                                        pages.Save(msMerge, ici, ep);
+                                                    }
+                                                    else
+                                                    {
+                                                        //save the intermediate frames
+                                                        ep.Param[0] = new EncoderParameter(enc, (long)EncoderValue.FrameDimensionPage);
+                                                        pages.SaveAdd((Bitmap)Image.FromStream(tempImg), ep);
+                                                    }
+                                                }
+                                                frame++;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (frame > 0)
+                {
+                    //flush and close.
+                    ep.Param[0] = new EncoderParameter(enc, (long)EncoderValue.Flush);
+                    pages.SaveAdd(ep);
+                }
+
+                msMerge.Position = 0;
+                tiffMerge = msMerge.ToArray();
+            }
+            string returnurldata = StoreImageInModelVaidDataCollection(tiffMerge, "tiff", DocumentName);
+            return tiffMerge;
         }
 
-        public static string StoreImageInModelVaidDataCollection(byte[] image, string file_type)
+        public static string StoreImageInModelVaidDataCollection(byte[] image, string file_type, string DocumentName)
         {
             CloudBlobContainer cont = new CloudStorageAccount(new StorageCredentials(accountname, accesskey), useHttps: true).CreateCloudBlobClient().GetContainerReference(containername);
             cont.CreateIfNotExists();
             cont.SetPermissions(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
-            CloudBlockBlob cblob = cont.GetBlockBlobReference(Guid.NewGuid() + "_" + DateTime.Now.ToString("ddMMyyyy_HHmmss_ffffff") + "."+ file_type);//name should be unique otherwise override at same name.  
+            CloudBlockBlob cblob = cont.GetBlockBlobReference(DocumentName + "_"+Guid.NewGuid() + "_" + DateTime.Now.ToString("ddMMyyyy_HHmmss_ffffff") + "."+ file_type);//name should be unique otherwise override at same name.  
             cblob.UploadFromStream(new MemoryStream(image));
             return cblob.Uri.AbsoluteUri;
         }

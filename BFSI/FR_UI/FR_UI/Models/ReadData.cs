@@ -117,7 +117,7 @@ namespace FR_UI.Models
                 var hotelFilter = new string[] { "hotel", "guest", "room" };
                 var bankBookFilter = new string[] { "joint holder", "passbook", "transaction statement", "ifsc code", "statement" };
                 var BirthCertificateFilter = new string[] { "birth certificate", "certification of birth", "child's name" };
-                var AirTicketFilter = new string[] { "airport", "passenger", "flight", "Booking ID" };
+                var AirTicketFilter = new string[] { "airport", "passenger", "flight" };
                 var NationalIdFilter = new string[] { "republic of india", "country code", "passport no" };
                 List<int> findHotelDocumentPageNumber = new List<int>();
                 List<int> findBankBookPageNumber = new List<int>();

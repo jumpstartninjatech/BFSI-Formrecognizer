@@ -37,6 +37,7 @@ namespace FR_UI.Controllers
                 if (headers.Contains("GUID"))
                 {
                     var authtoken = headers.GetValues("GUID").First();
+                    var filename = headers.GetValues("filename").First();
                     if (authtoken == "e2e5f02b-a67d-416d-a4ab-091172ee3207")
                     {
                         MediaTypeHeaderValue MediaType = this.Request.Content.Headers.ContentType;
@@ -66,23 +67,23 @@ namespace FR_UI.Controllers
                                     {
                                         if (result.HotelDocumentPageNumber.Count() > 0)
                                         {
-                                            byte[] cbyte = MergeTiff(result.HotelDocumentPageNumber,"HotelBooking", imageBytes);
+                                            byte[] cbyte = MergeTiff(result.HotelDocumentPageNumber,"HotelBooking", filename, imageBytes);
                                         }
                                         if (result.BankBookPageNumber.Count() > 0)
                                         {
-                                            byte[] cbyte = MergeTiff(result.BankBookPageNumber,"BankStatement", imageBytes);
+                                            byte[] cbyte = MergeTiff(result.BankBookPageNumber,"BankStatement", filename, imageBytes);
                                         }
                                         if (result.BirthCertificatePageNumber.Count() > 0)
                                         {
-                                            byte[] cbyte = MergeTiff(result.BirthCertificatePageNumber,"BirthCertificate", imageBytes);
+                                            byte[] cbyte = MergeTiff(result.BirthCertificatePageNumber,"BirthCertificate", filename, imageBytes);
                                         }
                                         if (result.AirTicketPageNumber.Count() > 0)
                                         {
-                                            byte[] cbyte = MergeTiff(result.AirTicketPageNumber,"AirTicket", imageBytes);
+                                            byte[] cbyte = MergeTiff(result.AirTicketPageNumber,"AirTicket", filename, imageBytes);
                                         }
                                         if (result.NationalIdPageNumber.Count() > 0)
                                         {
-                                            byte[] cbyte = MergeTiff(result.NationalIdPageNumber,"NationalID", imageBytes);
+                                            byte[] cbyte = MergeTiff(result.NationalIdPageNumber,"NationalID", filename, imageBytes);
                                         }
 
                                         return Json(new { StatusCode = "200", Result = result });
@@ -127,7 +128,7 @@ namespace FR_UI.Controllers
             throw new NotImplementedException();
         }
 
-        public static byte[] MergeTiff( List<int> listdata,string DocumentName,params byte[][] tiffFiles)
+        public static byte[] MergeTiff( List<int> listdata,string DocumentName,string filename, params byte[][] tiffFiles)
         {
            
             byte[] tiffMerge = null;
@@ -203,16 +204,16 @@ namespace FR_UI.Controllers
                 msMerge.Position = 0;
                 tiffMerge = msMerge.ToArray();
             }
-            string returnurldata = StoreImageInModelVaidDataCollection(tiffMerge, "tiff", DocumentName);
+            string returnurldata = StoreImageInModelVaidDataCollection(tiffMerge, "tiff", filename, DocumentName);
             return tiffMerge;
         }
 
-        public static string StoreImageInModelVaidDataCollection(byte[] image, string file_type, string DocumentName)
+        public static string StoreImageInModelVaidDataCollection(byte[] image, string file_type,string filename, string DocumentName)
         {
             CloudBlobContainer cont = new CloudStorageAccount(new StorageCredentials(accountname, accesskey), useHttps: true).CreateCloudBlobClient().GetContainerReference(containername);
             cont.CreateIfNotExists();
             cont.SetPermissions(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
-            CloudBlockBlob cblob = cont.GetBlockBlobReference(DocumentName + "_"+Guid.NewGuid() + "_" + DateTime.Now.ToString("ddMMyyyy_HHmmss_ffffff") + "."+ file_type);//name should be unique otherwise override at same name.  
+            CloudBlockBlob cblob = cont.GetBlockBlobReference(filename + "_"+DocumentName + "_" + DateTime.Now.ToString("ddMMyyyy_HHmmss_ffffff") + "."+ file_type);//name should be unique otherwise override at same name.  
             cblob.UploadFromStream(new MemoryStream(image));
             return cblob.Uri.AbsoluteUri;
         }

@@ -110,7 +110,6 @@ namespace FR_UI.Models
 
         public static PageResult ValidateAnalyzeResult(List<AnalyzeLayoutResult> analyzeLayoutResults)
         {
-            
             try
             {
                 //List<PageResult> pageResults = new List<PageResult>();
@@ -172,7 +171,6 @@ namespace FR_UI.Models
                 PageResult PR = new PageResult();
                 PR.statusCode = 300;
                 return PR;
-
             }
 
 

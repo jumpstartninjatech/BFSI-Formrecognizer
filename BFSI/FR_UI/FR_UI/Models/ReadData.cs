@@ -159,48 +159,6 @@ namespace FR_UI.Models
 
                 }
 
-                //var findHotelDocumentPageNumber = analyzeLayoutResults.Where(s => s.LinesText.Contains("hotel") || s.LinesText.Contains("guest") || s.LinesText.Contains("room")).Select(s => s.PageNumber).ToList();
-                //var findBankBookPageNumber = analyzeLayoutResults.Where(s => s.LinesText.Contains("bank") || s.LinesText.Contains("customer")|| s.LinesText.Contains("joint holder")).Select(s => s.PageNumber).ToList();
-                //var findBirthCertificatePageNumber = analyzeLayoutResults.Where(s => s.LinesText.Contains("birth certificate") || s.LinesText.Contains("certification of birth")).Select(s => s.PageNumber).ToList();
-                //var findAirTicketPageNumber = analyzeLayoutResults.Where(s => s.LinesText.Contains("economy") || s.LinesText.Contains("airport") || s.LinesText.Contains("passenger")).Select(s => s.PageNumber).ToList();
-                //var findNationalIdPageNumber = analyzeLayoutResults.Where(s => s.LinesText.Contains("passport")|| s.LinesText.Contains("republic of india")).Select(s => s.PageNumber).ToList();
-
-                //pageResults.Add(new PageResult
-                //{
-                //    FormatType = 0,
-                //    statusCode = 200,
-                //    HotelDocumentPageNumber = findHotelDocumentPageNumber,
-                //    BankBookPageNumber = findBankBookPageNumber,
-                //    BirthCertificatePageNumber = findBirthCertificatePageNumber,
-                //    AirTicketPageNumber = findAirTicketPageNumber,
-                //    NationalIdPageNumber = findNationalIdPageNumber
-                //});
-
-                //pageResults.Add(new PageResult
-                //{
-                //    FormatType = 1,
-                //    HotelDocumentPageNumber = findHotelDocumentPageNumber
-                //}); 
-                //pageResults.Add(new PageResult
-                //{
-                //    FormatType = 2,
-                //    BankBookPageNumber = findBankBookPageNumber
-                //});
-                //pageResults.Add(new PageResult
-                //{
-                //    FormatType = 3,
-                //    BirthCertificatePageNumber = findBirthCertificatePageNumber
-                //});
-                //pageResults.Add(new PageResult
-                //{
-                //    FormatType = 4,
-                //    AirTicketPageNumber = findAirTicketPageNumber
-                //}); 
-                //pageResults.Add(new PageResult
-                //{
-                //    FormatType = 5,
-                //    NationalIdPageNumber = findNationalIdPageNumber
-                //});
                 PR.statusCode = 200;
                 PR.HotelDocumentPageNumber = findHotelDocumentPageNumber;
                 PR.BankBookPageNumber = findBankBookPageNumber;

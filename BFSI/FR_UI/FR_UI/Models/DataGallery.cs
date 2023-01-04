@@ -35,6 +35,8 @@ namespace FR_UI.Models
                     return "srt";
                 case "SUKQA":
                     return "tiff";
+                case "TVRZM":
+                    return "tiff";
                 default:
                     return string.Empty;
             }

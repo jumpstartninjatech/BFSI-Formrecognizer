@@ -1,7 +1,10 @@
-﻿using FR_UI.Models;
+﻿using Azure.Storage;
+using Azure.Storage.Files.DataLake;
+using FR_UI.Models;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Auth;
 using Microsoft.Azure.Storage.Blob;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -22,7 +25,12 @@ namespace FR_UI.Controllers
     {
         public static string accountname = ConfigurationManager.AppSettings["AzureBlobStorageAccName"];
         public static string accesskey = ConfigurationManager.AppSettings["AzureBlobStorageAccKey"];
+        public static string AzureDataLakeKey = ConfigurationManager.AppSettings["AzureDataLakeKey"];
+        public static string AzureDataLakeAccountName = ConfigurationManager.AppSettings["AzureDataLakeAccountName"];
+        public static string AzureDataLakeContainerNameDestination = ConfigurationManager.AppSettings["AzureDataLakeContainerNameDestination"];
+
         public static string containername = "tiffdatamerge";
+        public static string datatimecurentnow,sourceurl,jsondatastring,destinationurl;
 
         [HttpPost]
         [Route("GetTiffExtraction")]
@@ -34,6 +42,8 @@ namespace FR_UI.Controllers
                 var imagestring = "";
                 string filetype = "";
                 string base64string = "";
+                string sourceBaseUrl = "https://bfsidatalakegen.blob.core.windows.net/source/";
+                string destinationBaseUrl = "https://bfsidatalakegen.blob.core.windows.net/destination/";
                 if (headers.Contains("GUID"))
                 {
                     var authtoken = headers.GetValues("GUID").First();
@@ -58,6 +68,7 @@ namespace FR_UI.Controllers
                             {
                                 if (filesize)
                                 {
+                                    sourceurl = sourceBaseUrl + filename + "." + filetype;
                                     byte[] imageBytes = Convert.FromBase64String(imagestring);
 
                                     ReadData.ExtractText(imagestring);
@@ -67,23 +78,43 @@ namespace FR_UI.Controllers
                                     {
                                         if (result.HotelDocumentPageNumber.Count() > 0)
                                         {
-                                            byte[] cbyte = MergeTiff(result.HotelDocumentPageNumber,"HotelBooking", filename, imageBytes);
+                                            jsondatastring = JsonConvert.SerializeObject(result.HotelDocumentPageNumber);
+                                            datatimecurentnow = DateTime.Now.ToString("ddMMyyyy");
+                                            destinationurl = destinationBaseUrl + filename + "_Hotelbooking_" + datatimecurentnow + "." + filetype;
+                                            MergeTiff(datatimecurentnow,result.HotelDocumentPageNumber,"Hotelbooking", filename, imageBytes);
+                                            DataGallery.vChek_gr_infra(sourceurl, jsondatastring, destinationurl);
                                         }
                                         if (result.BankBookPageNumber.Count() > 0)
                                         {
-                                            byte[] cbyte = MergeTiff(result.BankBookPageNumber,"BankStatement", filename, imageBytes);
+                                            jsondatastring = JsonConvert.SerializeObject(result.BankBookPageNumber);
+                                            datatimecurentnow = DateTime.Now.ToString("ddMMyyyy");
+                                            destinationurl = destinationBaseUrl+ filename + "_Bankstatement_" + datatimecurentnow + "." + filetype;
+                                            MergeTiff(datatimecurentnow, result.BankBookPageNumber,"Bankstatement", filename, imageBytes);
+                                            DataGallery.vChek_gr_infra(sourceurl, jsondatastring, destinationurl);
                                         }
                                         if (result.BirthCertificatePageNumber.Count() > 0)
                                         {
-                                            byte[] cbyte = MergeTiff(result.BirthCertificatePageNumber,"BirthCertificate", filename, imageBytes);
+                                            jsondatastring = JsonConvert.SerializeObject(result.BirthCertificatePageNumber);
+                                            datatimecurentnow = DateTime.Now.ToString("ddMMyyyy");
+                                            destinationurl = destinationBaseUrl+ filename + "_Birthcertificate_" + datatimecurentnow + "." + filetype;
+                                            MergeTiff(datatimecurentnow, result.BirthCertificatePageNumber,"Birthcertificate", filename, imageBytes);
+                                            DataGallery.vChek_gr_infra(sourceurl, jsondatastring, destinationurl);
                                         }
                                         if (result.AirTicketPageNumber.Count() > 0)
                                         {
-                                            byte[] cbyte = MergeTiff(result.AirTicketPageNumber,"AirTicket", filename, imageBytes);
+                                            jsondatastring = JsonConvert.SerializeObject(result.AirTicketPageNumber);
+                                            datatimecurentnow = DateTime.Now.ToString("ddMMyyyy");
+                                            destinationurl = destinationBaseUrl + filename + "_Airticket_" + datatimecurentnow + "." + filetype;
+                                            MergeTiff(datatimecurentnow, result.AirTicketPageNumber,"Airticket", filename, imageBytes);
+                                            DataGallery.vChek_gr_infra(sourceurl, jsondatastring, destinationurl);
                                         }
                                         if (result.NationalIdPageNumber.Count() > 0)
                                         {
-                                            byte[] cbyte = MergeTiff(result.NationalIdPageNumber,"NationalID", filename, imageBytes);
+                                            jsondatastring = JsonConvert.SerializeObject(result.NationalIdPageNumber);
+                                            datatimecurentnow = DateTime.Now.ToString("ddMMyyyy");
+                                            destinationurl = destinationBaseUrl + filename + "_NationalID_" + datatimecurentnow + "." + filetype;
+                                            MergeTiff(datatimecurentnow, result.NationalIdPageNumber,"NationalID", filename, imageBytes);
+                                            DataGallery.vChek_gr_infra(sourceurl, jsondatastring, destinationurl);
                                         }
 
                                         return Json(new { StatusCode = "200", Result = result });
@@ -128,7 +159,7 @@ namespace FR_UI.Controllers
             throw new NotImplementedException();
         }
 
-        public static byte[] MergeTiff( List<int> listdata,string DocumentName,string filename, params byte[][] tiffFiles)
+        public static void MergeTiff( string datatimecurentnow, List<int> listdata,string DocumentName,string filename, params byte[][] tiffFiles)
         {
            
             byte[] tiffMerge = null;
@@ -204,8 +235,9 @@ namespace FR_UI.Controllers
                 msMerge.Position = 0;
                 tiffMerge = msMerge.ToArray();
             }
-            string returnurldata = StoreImageInModelVaidDataCollection(tiffMerge, "tiff", filename, DocumentName);
-            return tiffMerge;
+           // string returnurldata = StoreImageInModelVaidDataCollection(tiffMerge, "tiff", filename, DocumentName);
+             UploadFileBulk(tiffMerge, "tiff", filename, DocumentName, datatimecurentnow);
+            //return tiffMerge;
         }
 
         public static string StoreImageInModelVaidDataCollection(byte[] image, string file_type,string filename, string DocumentName)
@@ -213,9 +245,33 @@ namespace FR_UI.Controllers
             CloudBlobContainer cont = new CloudStorageAccount(new StorageCredentials(accountname, accesskey), useHttps: true).CreateCloudBlobClient().GetContainerReference(containername);
             cont.CreateIfNotExists();
             cont.SetPermissions(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
-            CloudBlockBlob cblob = cont.GetBlockBlobReference(filename + "_"+DocumentName + "_" + DateTime.Now.ToString("ddMMyyyy_HHmmss_ffffff") + "."+ file_type);//name should be unique otherwise override at same name.  
+            CloudBlockBlob cblob = cont.GetBlockBlobReference(filename + "_"+DocumentName + "_" + DateTime.Now.ToString("ddMMyyyy") + "."+ file_type);//name should be unique otherwise override at same name.  
             cblob.UploadFromStream(new MemoryStream(image));
             return cblob.Uri.AbsoluteUri;
+        }
+
+        public static async Task UploadFileBulk(byte[] image, string file_type, string filename, string DocumentName, string datatimecurentnow)
+        {
+            try
+            {
+                Uri serviceUri = new Uri("https://bfsidatalakegen.blob.core.windows.net");
+
+                StorageSharedKeyCredential sharedKeyCredential = new StorageSharedKeyCredential(AzureDataLakeAccountName, AzureDataLakeKey);
+                // Create DataLakeServiceClient using StorageSharedKeyCredentials
+                DataLakeServiceClient serviceClient = new DataLakeServiceClient(serviceUri, sharedKeyCredential);
+                // Create a DataLake Filesystem
+                DataLakeFileSystemClient filesystem = serviceClient.GetFileSystemClient(AzureDataLakeContainerNameDestination);
+                //DataLakeDirectoryClient directoryClient = serviceClient.GetDirectoryClient(AzureDataLakeContainerNameDestination);
+                DataLakeFileClient fileClient = filesystem.GetFileClient(filename + "_" + DocumentName + "_" + datatimecurentnow + "." + file_type);
+                await fileClient.UploadAsync(new MemoryStream(image));
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+            
+
         }
 
     }

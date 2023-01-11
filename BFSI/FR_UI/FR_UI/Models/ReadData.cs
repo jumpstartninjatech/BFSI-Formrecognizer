@@ -116,7 +116,7 @@ namespace FR_UI.Models
                 PageResult PR = new PageResult();
                 var hotelFilter = new string[] { "hotel", "guest", "room" };
                 var bankBookFilter = new string[] { "joint holder", "passbook", "transaction statement", "ifsc code", "statement" };
-                var BirthCertificateFilter = new string[] { "birth certificate", "certification of birth", "child's name" };
+                var BirthCertificateFilter = new string[] { "birth certificate", "certification of birth", "child's name","certificate of birth" };
                 var AirTicketFilter = new string[] { "airport", "passenger", "flight" };
                 var NationalIdFilter = new string[] { "republic of india", "country code", "passport no" };
                 List<int> findHotelDocumentPageNumber = new List<int>();
@@ -127,8 +127,6 @@ namespace FR_UI.Models
 
                 foreach (var arrayele in analyzeLayoutResults)
                 {
-                    Console.WriteLine(arrayele.PageNumber);
-                    Console.WriteLine(arrayele.LinesText);
                     string[] dataarray = arrayele.LinesText.ToArray();
                     var hotelMatches = FindMatchs(dataarray, hotelFilter);
                     if (hotelMatches.Length > 0)

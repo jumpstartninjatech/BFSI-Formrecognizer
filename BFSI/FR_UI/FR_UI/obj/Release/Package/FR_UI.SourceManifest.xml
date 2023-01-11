@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <sitemanifest>
-  <IisApp path="D:\Ravi\FR_Demo\FR_POC_new\FR_POC\FR_UI\FR_UI\obj\Release\Package\PackageTmp" />
-  <setAcl path="D:\Ravi\FR_Demo\FR_POC_new\FR_POC\FR_UI\FR_UI\obj\Release\Package\PackageTmp" setAclResourceType="Directory" />
-  <setAcl path="D:\Ravi\FR_Demo\FR_POC_new\FR_POC\FR_UI\FR_UI\obj\Release\Package\PackageTmp" setAclUser="anonymousAuthenticationUser" setAclResourceType="Directory" />
+  <IisApp path="D:\Arun\Github\BFSI-Formrecognizer\BFSI\FR_UI\FR_UI\obj\Release\Package\PackageTmp" />
+  <setAcl path="D:\Arun\Github\BFSI-Formrecognizer\BFSI\FR_UI\FR_UI\obj\Release\Package\PackageTmp" setAclResourceType="Directory" />
+  <setAcl path="D:\Arun\Github\BFSI-Formrecognizer\BFSI\FR_UI\FR_UI\obj\Release\Package\PackageTmp" setAclUser="anonymousAuthenticationUser" setAclResourceType="Directory" />
 </sitemanifest>

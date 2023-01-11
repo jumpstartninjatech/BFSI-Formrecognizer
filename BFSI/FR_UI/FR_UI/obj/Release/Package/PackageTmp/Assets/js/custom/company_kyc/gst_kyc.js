@@ -87,8 +87,15 @@ function single_convertToBase64(event) {
 }
 
 $("#submit_btn_id").click(function () {
-    debugger;
     $("#process_err_msg").html("");
+
+    var ck_box = $('input[type="checkbox"]:checked').length;
+
+    console.log("ck_box", ck_box);
+    if (ck_box == 0) {
+        $("#process_err_msg").html("Please select atleast one checkbox for document identification");
+        return false;
+    }
 
     if ($("#document_file").val() == "") {
         $("#process_err_msg").html("Please select a file");

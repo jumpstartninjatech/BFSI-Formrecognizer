@@ -30,7 +30,7 @@ namespace FR_UI.Controllers
         public static string AzureDataLakeContainerNameDestination = ConfigurationManager.AppSettings["AzureDataLakeContainerNameDestination"];
 
         public static string containername = "tiffdatamerge";
-        public static string datatimecurentnow,sourceurl,jsondatastring,destinationurl;
+        public static string datatimecurentnow,sourceurl,jsondatastring,destinationurl, distinationdatastring;
 
         [HttpPost]
         [Route("GetTiffExtraction")]
@@ -69,6 +69,7 @@ namespace FR_UI.Controllers
                                 if (filesize)
                                 {
                                     sourceurl = sourceBaseUrl + filename + "." + filetype;
+                                    List<string> destinationurllist = new List<string>();
                                     byte[] imageBytes = Convert.FromBase64String(imagestring);
 
                                     ReadData.ExtractText(imagestring);
@@ -82,7 +83,8 @@ namespace FR_UI.Controllers
                                             datatimecurentnow = DateTime.Now.ToString("ddMMyyyy");
                                             destinationurl = destinationBaseUrl + filename + "_Hotelbooking_" + datatimecurentnow + "." + filetype;
                                             MergeTiff(datatimecurentnow,result.HotelDocumentPageNumber,"Hotelbooking", filename, imageBytes);
-                                            DataGallery.vChek_gr_infra(sourceurl, jsondatastring, destinationurl);
+                                            destinationurllist.Add(destinationurl);
+                                           // DataGallery.vChek_gr_infra(sourceurl, jsondatastring, destinationurl);
                                         }
                                         if (result.BankBookPageNumber.Count() > 0)
                                         {
@@ -90,7 +92,8 @@ namespace FR_UI.Controllers
                                             datatimecurentnow = DateTime.Now.ToString("ddMMyyyy");
                                             destinationurl = destinationBaseUrl+ filename + "_Bankstatement_" + datatimecurentnow + "." + filetype;
                                             MergeTiff(datatimecurentnow, result.BankBookPageNumber,"Bankstatement", filename, imageBytes);
-                                            DataGallery.vChek_gr_infra(sourceurl, jsondatastring, destinationurl);
+                                            destinationurllist.Add(destinationurl);
+                                            //  DataGallery.vChek_gr_infra(sourceurl, jsondatastring, destinationurl);
                                         }
                                         if (result.BirthCertificatePageNumber.Count() > 0)
                                         {
@@ -98,7 +101,8 @@ namespace FR_UI.Controllers
                                             datatimecurentnow = DateTime.Now.ToString("ddMMyyyy");
                                             destinationurl = destinationBaseUrl+ filename + "_Birthcertificate_" + datatimecurentnow + "." + filetype;
                                             MergeTiff(datatimecurentnow, result.BirthCertificatePageNumber,"Birthcertificate", filename, imageBytes);
-                                            DataGallery.vChek_gr_infra(sourceurl, jsondatastring, destinationurl);
+                                            destinationurllist.Add(destinationurl);
+                                            // DataGallery.vChek_gr_infra(sourceurl, jsondatastring, destinationurl);
                                         }
                                         if (result.AirTicketPageNumber.Count() > 0)
                                         {
@@ -106,7 +110,8 @@ namespace FR_UI.Controllers
                                             datatimecurentnow = DateTime.Now.ToString("ddMMyyyy");
                                             destinationurl = destinationBaseUrl + filename + "_Airticket_" + datatimecurentnow + "." + filetype;
                                             MergeTiff(datatimecurentnow, result.AirTicketPageNumber,"Airticket", filename, imageBytes);
-                                            DataGallery.vChek_gr_infra(sourceurl, jsondatastring, destinationurl);
+                                            destinationurllist.Add(destinationurl);
+                                            // DataGallery.vChek_gr_infra(sourceurl, jsondatastring, destinationurl);
                                         }
                                         if (result.NationalIdPageNumber.Count() > 0)
                                         {
@@ -114,9 +119,12 @@ namespace FR_UI.Controllers
                                             datatimecurentnow = DateTime.Now.ToString("ddMMyyyy");
                                             destinationurl = destinationBaseUrl + filename + "_NationalID_" + datatimecurentnow + "." + filetype;
                                             MergeTiff(datatimecurentnow, result.NationalIdPageNumber,"NationalID", filename, imageBytes);
-                                            DataGallery.vChek_gr_infra(sourceurl, jsondatastring, destinationurl);
+                                            destinationurllist.Add(destinationurl);
+                                            // DataGallery.vChek_gr_infra(sourceurl, jsondatastring, destinationurl);
                                         }
-
+                                        jsondatastring = JsonConvert.SerializeObject(result);
+                                        distinationdatastring = JsonConvert.SerializeObject(destinationurllist);
+                                        DataGallery.vChek_gr_infra(sourceurl, jsondatastring, distinationdatastring);
                                         return Json(new { StatusCode = "200", Result = result });
                                     }
 

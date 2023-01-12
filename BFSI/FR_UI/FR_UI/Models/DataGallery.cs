@@ -68,7 +68,7 @@ namespace FR_UI.Models
                 //string DynamicConnectionStringFromSession = new WWCryptography().Decrypt(LD.ConnectionString, "Admin@123");
                 MySqlCommand cmd = new MySqlCommand("gr_infra_console_inspection", new MySqlConnection(Connstring()));
                 cmd.CommandType = CommandType.StoredProcedure;
-                var activity_name = "Royalty Challan";
+                var activity_name = "Document Identification";
                 var object_name = "RC";
                 var object_id = "GSNRNRNLKSKNLRFC";
                 // activity_id - foregin key
@@ -105,7 +105,7 @@ namespace FR_UI.Models
                 cmd.Parameters.Add(new MySqlParameter("v_sdk_version", sdk_version));
                 cmd.Parameters.Add(new MySqlParameter("v_reference_key", reference_key));
                 cmd.Parameters.Add(new MySqlParameter("v_site_id", 4));
-                cmd.Parameters.Add(new MySqlParameter("v_site_code", "002"));
+                cmd.Parameters.Add(new MySqlParameter("v_site_code", "003"));
                 cmd.Parameters.Add(new MySqlParameter("v_param_17", param_17));
                 cmd.Parameters.Add(new MySqlParameter("v_param_18", param_18));
                 cmd.Parameters.Add(new MySqlParameter("v_param_19", param_19));

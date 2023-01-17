@@ -58,7 +58,7 @@ namespace FR_UI.Models
             }
         }
 
-        public static void vChek_gr_infra(string sourceurl, string validateDataFormat1s, string destinationurl)
+        public static void vChek_gr_infra(string sourceurl, string validateDataFormat1s, string destinationurl, string filename)
         {
             int result = 0;
             try
@@ -70,9 +70,9 @@ namespace FR_UI.Models
                 cmd.CommandType = CommandType.StoredProcedure;
                 var activity_name = "Document Identification";
                 var object_name = "RC";
-                var object_id = "GSNRNRNLKSKNLRFC";
+                var object_id = filename;
                 // activity_id - foregin key
-                var activity_id = 139;
+                var activity_id = 140;
                 var site_user_id = 2000;
                 var user_name = "Testing";
                 var employee_name = "Sample";

@@ -16,11 +16,11 @@ namespace FR_UI.Models
     {
         //public int FormatType { get; set; }
         public int statusCode { get; set; }
-        public List<int> HotelDocumentPageNumber { get; set; }
-        public List<int> BankBookPageNumber { get; set; }
-        public List<int> BirthCertificatePageNumber { get; set; }
-        public List<int> AirTicketPageNumber { get; set; }
-        public List<int> NationalIdPageNumber { get; set; }
+        public List<int> HotelReservation { get; set; }
+        public List<int> BankAccountStatement { get; set; }
+        public List<int> BirthCertificate { get; set; }
+        public List<int> AirTicket { get; set; }
+        public List<int> Passport { get; set; }
 
 
 

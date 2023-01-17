@@ -30,7 +30,7 @@ namespace FR_UI.Controllers
         public static string AzureDataLakeContainerNameDestination = ConfigurationManager.AppSettings["AzureDataLakeContainerNameDestination"];
 
         public static string containername = "tiffdatamerge";
-        public static string datatimecurentnow,sourceurl,jsondatastring,destinationurl, distinationdatastring;
+        public static string datatimecurentnow,sourceurl,jsondatastring,destinationurl, distinationdatastring,datacurrentdate;
 
         [HttpPost]
         [Route("GetTiffExtraction")]
@@ -42,8 +42,8 @@ namespace FR_UI.Controllers
                 var imagestring = "";
                 string filetype = "";
                 string base64string = "";
-                string sourceBaseUrl = "https://bfsidatalakegen.blob.core.windows.net/source/";
-                string destinationBaseUrl = "https://bfsidatalakegen.blob.core.windows.net/destination/";
+                string sourceBaseUrl = "https://bfsidatalakegen.blob.core.windows.net/unprocessed/";
+                string destinationBaseUrl = "https://bfsidatalakegen.blob.core.windows.net/processed/";
                 if (headers.Contains("GUID"))
                 {
                     var authtoken = headers.GetValues("GUID").First();
@@ -74,57 +74,59 @@ namespace FR_UI.Controllers
 
                                     ReadData.ExtractText(imagestring);
                                     var result = ReadData.ValidateAnalyzeResult(ReadData.ALR);
-
+                                    datatimecurentnow = DateTime.Now.ToString("dd-MM-yyyy");
+                                    datacurrentdate = DateTime.Now.ToString("HH");
+                                    string newdatatimenow = datatimecurentnow.Replace("-", "");
                                     if (result.statusCode == 200)
                                     {
-                                        if (result.HotelDocumentPageNumber.Count() > 0)
+                                        if (result.HotelReservation.Count() > 0)
                                         {
-                                            jsondatastring = JsonConvert.SerializeObject(result.HotelDocumentPageNumber);
-                                            datatimecurentnow = DateTime.Now.ToString("ddMMyyyy");
-                                            destinationurl = destinationBaseUrl + filename + "_Hotelbooking_" + datatimecurentnow + "." + filetype;
-                                            MergeTiff(datatimecurentnow,result.HotelDocumentPageNumber,"Hotelbooking", filename, imageBytes);
+                                            jsondatastring = JsonConvert.SerializeObject(result.HotelReservation);
+                                           
+                                            destinationurl = destinationBaseUrl + datatimecurentnow + "/" + datacurrentdate + "/" + filename + "/" + filename + "_HotelReservation_" + newdatatimenow + "." + filetype;
+                                            MergeTiff(datatimecurentnow, datacurrentdate, result.HotelReservation, "HotelReservation", filename, imageBytes);
                                             destinationurllist.Add(destinationurl);
                                            // DataGallery.vChek_gr_infra(sourceurl, jsondatastring, destinationurl);
                                         }
-                                        if (result.BankBookPageNumber.Count() > 0)
+                                        if (result.BankAccountStatement.Count() > 0)
                                         {
-                                            jsondatastring = JsonConvert.SerializeObject(result.BankBookPageNumber);
-                                            datatimecurentnow = DateTime.Now.ToString("ddMMyyyy");
-                                            destinationurl = destinationBaseUrl+ filename + "_Bankstatement_" + datatimecurentnow + "." + filetype;
-                                            MergeTiff(datatimecurentnow, result.BankBookPageNumber,"Bankstatement", filename, imageBytes);
+                                            jsondatastring = JsonConvert.SerializeObject(result.BankAccountStatement);
+                                            
+                                            destinationurl = destinationBaseUrl + datatimecurentnow + "/" + datacurrentdate + "/" + filename + "/" + filename + "_BankAccountStatement_" + newdatatimenow + "." + filetype;
+                                            MergeTiff(datatimecurentnow, datacurrentdate, result.BankAccountStatement, "BankAccountStatement", filename, imageBytes);
                                             destinationurllist.Add(destinationurl);
                                             //  DataGallery.vChek_gr_infra(sourceurl, jsondatastring, destinationurl);
                                         }
-                                        if (result.BirthCertificatePageNumber.Count() > 0)
+                                        if (result.BirthCertificate.Count() > 0)
                                         {
-                                            jsondatastring = JsonConvert.SerializeObject(result.BirthCertificatePageNumber);
-                                            datatimecurentnow = DateTime.Now.ToString("ddMMyyyy");
-                                            destinationurl = destinationBaseUrl+ filename + "_Birthcertificate_" + datatimecurentnow + "." + filetype;
-                                            MergeTiff(datatimecurentnow, result.BirthCertificatePageNumber,"Birthcertificate", filename, imageBytes);
+                                            jsondatastring = JsonConvert.SerializeObject(result.BirthCertificate);
+                                            
+                                            destinationurl = destinationBaseUrl + datatimecurentnow + "/" + datacurrentdate + "/" + filename + "/" + filename + "_BirthCertificate_" + newdatatimenow + "." + filetype;
+                                            MergeTiff(datatimecurentnow,datacurrentdate, result.BirthCertificate, "BirthCertificate", filename, imageBytes);
                                             destinationurllist.Add(destinationurl);
                                             // DataGallery.vChek_gr_infra(sourceurl, jsondatastring, destinationurl);
                                         }
-                                        if (result.AirTicketPageNumber.Count() > 0)
+                                        if (result.AirTicket.Count() > 0)
                                         {
-                                            jsondatastring = JsonConvert.SerializeObject(result.AirTicketPageNumber);
-                                            datatimecurentnow = DateTime.Now.ToString("ddMMyyyy");
-                                            destinationurl = destinationBaseUrl + filename + "_Airticket_" + datatimecurentnow + "." + filetype;
-                                            MergeTiff(datatimecurentnow, result.AirTicketPageNumber,"Airticket", filename, imageBytes);
+                                            jsondatastring = JsonConvert.SerializeObject(result.AirTicket);
+                                            
+                                            destinationurl = destinationBaseUrl + datatimecurentnow + "/" + datacurrentdate + "/" + filename + "/" + filename + "_AirTicket_" + newdatatimenow + "." + filetype;
+                                            MergeTiff(datatimecurentnow, datacurrentdate, result.AirTicket, "AirTicket", filename, imageBytes);
                                             destinationurllist.Add(destinationurl);
                                             // DataGallery.vChek_gr_infra(sourceurl, jsondatastring, destinationurl);
                                         }
-                                        if (result.NationalIdPageNumber.Count() > 0)
+                                        if (result.Passport.Count() > 0)
                                         {
-                                            jsondatastring = JsonConvert.SerializeObject(result.NationalIdPageNumber);
-                                            datatimecurentnow = DateTime.Now.ToString("ddMMyyyy");
-                                            destinationurl = destinationBaseUrl + filename + "_NationalID_" + datatimecurentnow + "." + filetype;
-                                            MergeTiff(datatimecurentnow, result.NationalIdPageNumber,"NationalID", filename, imageBytes);
+                                            jsondatastring = JsonConvert.SerializeObject(result.Passport);
+                                           
+                                            destinationurl = destinationBaseUrl+ datatimecurentnow+"/"+ datacurrentdate+"/"+ filename+"/" + filename + "_Passport_" + newdatatimenow + "." + filetype;
+                                            MergeTiff(datatimecurentnow, datacurrentdate, result.Passport, "Passport", filename, imageBytes);
                                             destinationurllist.Add(destinationurl);
                                             // DataGallery.vChek_gr_infra(sourceurl, jsondatastring, destinationurl);
                                         }
                                         jsondatastring = JsonConvert.SerializeObject(result);
                                         distinationdatastring = JsonConvert.SerializeObject(destinationurllist);
-                                        DataGallery.vChek_gr_infra(sourceurl, jsondatastring, distinationdatastring);
+                                        DataGallery.vChek_gr_infra(sourceurl, jsondatastring, distinationdatastring, filename);
                                         return Json(new { StatusCode = "200", Result = result });
                                     }
 
@@ -167,7 +169,7 @@ namespace FR_UI.Controllers
             throw new NotImplementedException();
         }
 
-        public static void MergeTiff( string datatimecurentnow, List<int> listdata,string DocumentName,string filename, params byte[][] tiffFiles)
+        public static void MergeTiff( string datatimecurentnow,string datacurrentdate, List<int> listdata,string DocumentName,string filename, params byte[][] tiffFiles)
         {
            
             byte[] tiffMerge = null;
@@ -244,7 +246,7 @@ namespace FR_UI.Controllers
                 tiffMerge = msMerge.ToArray();
             }
            // string returnurldata = StoreImageInModelVaidDataCollection(tiffMerge, "tiff", filename, DocumentName);
-             UploadFileBulk(tiffMerge, "tiff", filename, DocumentName, datatimecurentnow);
+             UploadFileBulk(tiffMerge, "tiff", filename, DocumentName, datatimecurentnow, datacurrentdate);
             //return tiffMerge;
         }
 
@@ -258,7 +260,7 @@ namespace FR_UI.Controllers
             return cblob.Uri.AbsoluteUri;
         }
 
-        public static async Task UploadFileBulk(byte[] image, string file_type, string filename, string DocumentName, string datatimecurentnow)
+        public static async Task UploadFileBulk(byte[] image, string file_type, string filename, string DocumentName, string datatimecurentnow, string datacurrentdate)
         {
             try
             {
@@ -267,10 +269,14 @@ namespace FR_UI.Controllers
                 StorageSharedKeyCredential sharedKeyCredential = new StorageSharedKeyCredential(AzureDataLakeAccountName, AzureDataLakeKey);
                 // Create DataLakeServiceClient using StorageSharedKeyCredentials
                 DataLakeServiceClient serviceClient = new DataLakeServiceClient(serviceUri, sharedKeyCredential);
+                
                 // Create a DataLake Filesystem
                 DataLakeFileSystemClient filesystem = serviceClient.GetFileSystemClient(AzureDataLakeContainerNameDestination);
+                // Create directory
+                DataLakeDirectoryClient directoryClient = filesystem.GetDirectoryClient(datatimecurentnow+"/"+datacurrentdate+"/"+ filename);
+               string newdatatimenow =  datatimecurentnow.Replace("-","");
                 //DataLakeDirectoryClient directoryClient = serviceClient.GetDirectoryClient(AzureDataLakeContainerNameDestination);
-                DataLakeFileClient fileClient = filesystem.GetFileClient(filename + "_" + DocumentName + "_" + datatimecurentnow + "." + file_type);
+                DataLakeFileClient fileClient = directoryClient.GetFileClient(filename + "_" + DocumentName + "_" + newdatatimenow + "." + file_type);
                 await fileClient.UploadAsync(new MemoryStream(image));
 
             }

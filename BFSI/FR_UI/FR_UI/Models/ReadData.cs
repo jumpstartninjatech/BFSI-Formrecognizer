@@ -157,11 +157,11 @@ namespace FR_UI.Models
                 }
 
                 PR.statusCode = 200;
-                PR.HotelDocumentPageNumber = findHotelDocumentPageNumber;
-                PR.BankBookPageNumber = findBankBookPageNumber;
-                PR.BirthCertificatePageNumber = findBirthCertificatePageNumber;
-                PR.AirTicketPageNumber = findAirTicketPageNumber;
-                PR.NationalIdPageNumber = findNationalIdPageNumber;
+                PR.HotelReservation = findHotelDocumentPageNumber;
+                PR.BankAccountStatement = findBankBookPageNumber;
+                PR.BirthCertificate = findBirthCertificatePageNumber;
+                PR.AirTicket = findAirTicketPageNumber;
+                PR.Passport = findNationalIdPageNumber;
                 return PR;
             }
             catch (Exception ex)
